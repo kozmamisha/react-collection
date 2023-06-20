@@ -1,14 +1,15 @@
 import React from 'react';
 import { Collection } from './Collection';
 import './index.scss';
+import Pagination from './Pagination';
 
 const cats = [
-  { "name": "Все" },
-  { "name": "Море" },
-  { "name": "Горы" },
-  { "name": "Архитектура" },
-  { "name": "Города" },
-]
+  { name: 'Все' },
+  { name: 'Море' },
+  { name: 'Горы' },
+  { name: 'Архитектура' },
+  { name: 'Города' },
+];
 
 function App() {
   const [categoryId, setCategoryId] = React.useState(0);
@@ -22,17 +23,16 @@ function App() {
 
     const category = categoryId ? `category=${categoryId}` : '';
 
-    fetch(
-      `http://localhost:3001/collections?page=${page}&limit=3&${category}`
-    )
+    fetch(`https://64918afe2f2c7ee6c2c86f1d.mockapi.io/items?page=${page}&limit=3&${category}`)
       .then((res) => res.json())
       .then((json) => {
         setCollections(json);
       })
-      .catch(err => {
+      .catch((err) => {
         console.warn(err);
         alert('Error getting data');
-      }).finally(() => setIsLoading(false));
+      })
+      .finally(() => setIsLoading(false));
   }, [categoryId, page]);
 
   return (
@@ -44,8 +44,7 @@ function App() {
             <li
               onClick={() => setCategoryId(i)}
               className={categoryId === i ? 'active' : ''}
-              key={obj.name}
-            >
+              key={obj.name}>
               {obj.name}
             </li>
           ))}
@@ -63,18 +62,10 @@ function App() {
         ) : (
           collections
             .filter((obj) => obj.name.toLowerCase().includes(searchValue.toLowerCase()))
-            .map((obj, index) => (
-              <Collection key={index} name={obj.name} images={obj.photos} />
-            ))
+            .map((obj, index) => <Collection key={index} name={obj.name} images={obj.photos} />)
         )}
       </div>
-      <ul className="pagination">
-        {[...Array(5)].map((_, i) => (
-          <li onClick={() => setPage(i + 1)} className={page === (i + 1) ? 'active' : ''}>
-            {i + 1}
-          </li>
-        ))}
-      </ul>
+      <Pagination page={page} setPage={setPage} />
     </div>
   );
 }
